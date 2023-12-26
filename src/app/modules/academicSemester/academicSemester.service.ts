@@ -40,7 +40,7 @@ if(Object.keys(filterData).length>0){
                 equals:(filterData as any)[key]
             }
         }))
-    })
+    });
 }
 
     const whereConditions:Prisma.AcademicSemesterWhereInput=andConditions.length>0?{AND:andConditions}:{}
@@ -63,7 +63,7 @@ if(Object.keys(filterData).length>0){
         page,
         limit,
     },
-    data:result
+    data:result,
 }
 }
 
@@ -77,10 +77,33 @@ const getSingleSemester=async (id:string):Promise<AcademicSemester|null> => {
     return result
 }
 
+// **************Update***************
+const updateSemester=async (id:string,payload:Partial<AcademicSemester>):Promise<AcademicSemester> => {
+    const result=await prisma.academicSemester.update({
+        where:{
+            id
+        },
+        data:payload
+    })
+    return result
+}
+
+
+// *************Delete**************
+const deleteSemester=async (id:string):Promise<AcademicSemester>  => {
+    const result=await prisma.academicSemester.delete({
+        where:{
+            id
+        }
+    })
+    return result
+} 
 
 
 export const academicSemesterService={
     createSemester,
     getAllSemester,
-    getSingleSemester
+    getSingleSemester,
+    updateSemester,
+    deleteSemester
 }

@@ -40,9 +40,37 @@ const getByIdFromDB = catchAsync(async (req: Request, res: Response) => {
     });
 })
 
+// *************update****************
+const updateFaculty= catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const payload=req.body
+    const result = await AcademicFacultyService.updateFaculty(id,payload);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'updates AcademicFaculty successfully',
+        data: result
+    });
+})
+
+// ************* deleteFaculty****************
+const  deleteFaculty= catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const result = await AcademicFacultyService.deleteFaculty(id);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Delete AcademicFaculty successfully',
+        data: result
+    });
+})
+
+
 
 export const AcademicFacultyController = {
     insertIntoDB,
     getAllFromDB,
-    getByIdFromDB
+    getByIdFromDB,
+    updateFaculty,
+    deleteFaculty
 };

@@ -10,7 +10,9 @@ router.get('/',
 
 router.get('/:id', StudentController.getByIdFromDB);
 
-router.get('/:id',validateRequest(StudentValidation.update),StudentController.updateStudent);
+router.patch('/:id',validateRequest(StudentValidation.update),StudentController.updateStudent);
+
+router.delete('/:id',StudentController.deleteStudent);
 
 router.post(
     '/',validateRequest(StudentValidation.create),

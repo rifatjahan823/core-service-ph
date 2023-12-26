@@ -20,4 +20,16 @@ import { z } from "zod";
     })
 })
 
-export const academicSemesterValidation={create}
+const update = z.object({
+    body: z.object({
+        title: z.string().optional(),
+        code: z.string().optional(),
+        year: z.number().optional(),
+        startMonth: z.string().optional(),
+        endMonth: z.string().optional()
+    })
+});
+
+
+
+export const academicSemesterValidation={create,update}

@@ -8,11 +8,10 @@ const router = express.Router();
 
 router.get('/', AcademicFacultyController.getAllFromDB);
 router.get('/:id', AcademicFacultyController.getByIdFromDB);
+router.delete('/:id', AcademicFacultyController.deleteFaculty);
 
-router.post(
-    '/',
-    validateRequest(AcademicFacultyValidation.create),
-    AcademicFacultyController.insertIntoDB
-);
+router.patch('/', validateRequest(AcademicFacultyValidation.update), AcademicFacultyController.updateFaculty);
+
+router.post('/', validateRequest(AcademicFacultyValidation.create), AcademicFacultyController.insertIntoDB);
 
 export const academicFacultyRoutes = router;
