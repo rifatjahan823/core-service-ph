@@ -1,0 +1,1 @@
+export const acdemicSemesterFilterableField=['title','code','startMonth','endMonth']

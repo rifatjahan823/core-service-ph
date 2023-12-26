@@ -68,7 +68,7 @@ model Student {
   academicSemesterId String @unique
   academicDepartment AcademicDepartment @relation(fields: [academicDepartmentId],references: [id])
   academicDepartmentId String @unique
-  academicFacultyI AcademicFaculty @relation(fields: [academicFacultyId],references: [id])
+  academicFaculty AcademicFaculty @relation(fields: [academicFacultyId],references: [id])
   academicFacultyId String @unique
 
  @@map("students")
@@ -91,7 +91,7 @@ model Faculty{
   updatedAt DateTime @updatedAt
   academicDepartment AcademicDepartment @relation(fields: [academicDepartmentId],references: [id])
   academicDepartmentId String @unique
-  academicFacultyI AcademicFaculty @relation(fields: [academicFacultyId],references: [id])
+  academicFaculty AcademicFaculty @relation(fields: [academicFacultyId],references: [id])
   academicFacultyId String @unique
 
    @@map("faculties")
