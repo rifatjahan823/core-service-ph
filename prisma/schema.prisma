@@ -93,6 +93,62 @@ model Faculty{
   academicDepartmentId String @unique
   academicFaculty AcademicFaculty @relation(fields: [academicFacultyId],references: [id])
   academicFacultyId String @unique
-
+   faculties  CourseFaculty[]
    @@map("faculties")
+}
+
+
+model Building{
+  id String @id @default(uuid())
+  title String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  rooms Room[]
+  @@map("buildings")
+}
+
+model Room{
+  id String @id @default(uuid())
+  roomNumber String
+  floor String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  building Building @relation(fields: [buildingId],references: [id])
+  buildingId String @unique
+  @@map("rooms")
+}
+
+model Course{
+  id String @id @default(uuid())
+  title String
+  code String
+  credits Int @default(0)
+  prerequiset CourseToPrerequiset[] @relation("CourseToPrerequiset")
+  prerequisetFor CourseToPrerequiset[] @relation("PrerequisetToCourse")
+  courses  CourseFaculty[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@map("courses")
+}
+
+// -----atai kono primary id cilona tai @id diye 2ta mile akta unique id kora hoyece.akahne aki table 2ta FK thakay name diye nam specify kora hoyece
+
+model CourseToPrerequiset{
+couseId String
+prerequisetId String
+
+course Course @relation(fields: [couseId],references: [id],name: "CourseToPrerequiset")
+prerequiset Course @relation(fields: [prerequisetId],references: [id],name: "PrerequisetToCourse")
+
+@@id([couseId,prerequisetId])
+}
+
+
+model CourseFaculty{
+  course Course @relation(fields: [courseId],references: [id])
+  courseId String @unique
+  faculty Faculty @relation(fields: [facultyId],references: [id])
+  facultyId String @unique
+  @@id([courseId,facultyId])
+  @@map("course_faculties")
 }
