@@ -1,4 +1,4 @@
-import { Course, Prisma } from "@prisma/client";
+import { Course, CourseFaculty, Prisma } from "@prisma/client";
 import prisma from "../../../shared/prisma";
 import { courseSearchableFields } from "./course.constants";
 import { IPaginationOptions } from "../../../interfaces/pagination";
@@ -226,8 +226,6 @@ return responseData
 
 }
 
-
-
 // *************Delete************
 const deleteByIdFromDB = async (id: string): Promise<Course> => {
   await prisma.courseToPrerequiset.deleteMany({
@@ -251,11 +249,62 @@ const deleteByIdFromDB = async (id: string): Promise<Course> => {
   return result;
 };
 
+
+// ***************CourseFaculty***************
+const assignFaculties = async (id: string, payload: string[]): Promise<CourseFaculty[]> => {
+  if (!payload || !payload.length) {
+    // Handle the case where payload is undefined or empty
+    throw new Error('Payload is undefined or empty');
+  }
+
+  await prisma.courseFaculty.createMany({
+    data: payload.map((facultyId) => ({
+      courseId: id,
+      facultyId: facultyId,
+    })),
+  });
+
+  const assignFacultiesData = await prisma.courseFaculty.findMany({
+    where: {
+      courseId: id,
+    },
+    include: {
+      faculty: true,
+    },
+  });
+
+  return assignFacultiesData;
+};
+
+// **********remove-faculties*************
+const removeFaculties=async (id: string, payload: string[]): Promise<CourseFaculty[] | null> => {
+  await prisma.courseFaculty.deleteMany({
+    where:{
+      courseId:id,
+      facultyId:{
+        in:payload
+      }
+    },
+  });
+  const assignFacultiesData = await prisma.courseFaculty.findMany({
+    where: {
+      courseId: id,
+    },
+    include: {
+      faculty: true,
+    },
+  });
+  return assignFacultiesData 
+}
+
+
   export const CourseService={
     insertIntoDB,
     getAllFromDB,
     getByIdFromDB,
     updateOneInDB, 
-    deleteByIdFromDB
+    deleteByIdFromDB,
+    assignFaculties,
+    removeFaculties
   }
   

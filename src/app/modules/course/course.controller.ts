@@ -62,10 +62,39 @@ const deleteByIdFromDB = catchAsync(async (req: Request, res: Response) => {
     });
 })
 
+
+// ***************CourseFaculty***************
+const assignFaculties = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const result = await CourseService.assignFaculties(id,req.body.faculties);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: ' AssignFaculties successfully',
+        data: result
+    });
+})
+
+// **********remove-faculties*************
+const removeFaculties = catchAsync(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const result = await CourseService.removeFaculties(id,req.body.faculties);
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: 'Faculties Remove successfully',
+        data: result
+    });
+})
+
+
+
 export const CourseController={
     insertIntoDB,
     getAllFromDB,
     getByIdFromDB,
     updateOneInDB,
-    deleteByIdFromDB
+    deleteByIdFromDB,
+    assignFaculties,
+    removeFaculties
 }
