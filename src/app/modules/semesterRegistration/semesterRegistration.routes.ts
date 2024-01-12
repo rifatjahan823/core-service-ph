@@ -23,5 +23,28 @@ router.delete(
     '/:id',
     SemesterRegistrationController.deleteByIdFromDB
 );
+// ***************************
+router.post(
+    '/start-registration',
+    SemesterRegistrationController.startMyRegistration
+)
+router.get(
+    '/get-my-registration',
+    SemesterRegistrationController.getMyRegistration
+)
+router.post(
+    '/enroll-into-course',
+    validateRequest(SemesterRegistrationValidation.enrollOrWithdrawCourse),
+    SemesterRegistrationController.enrollIntoCourse
+)
 
+router.post(
+    '/withdraw-from-course',
+    validateRequest(SemesterRegistrationValidation.enrollOrWithdrawCourse),
+    SemesterRegistrationController.withdrawFromCourse
+)
+router.post(
+    '/confirm-my-registration',
+    SemesterRegistrationController.confirmMyRegistration
+)
 export const semesterRegistrationRoutes = router;
