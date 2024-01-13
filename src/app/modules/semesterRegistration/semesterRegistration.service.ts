@@ -458,7 +458,6 @@ const startNewSemester = async (
         )
     })
 
-
     return {
         message: "Semester started successfully!"
     }
