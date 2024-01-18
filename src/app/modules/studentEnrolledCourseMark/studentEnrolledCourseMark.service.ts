@@ -1,9 +1,13 @@
-import { ExamType, PrismaClient, StudentEnrolledCourseStatus } from "@prisma/client"
+import { ExamType, PrismaClient, StudentEnrolledCourseMark, StudentEnrolledCourseStatus } from "@prisma/client"
 import { DefaultArgs, PrismaClientOptions } from "@prisma/client/runtime/library"
 import prisma from "../../../shared/prisma"
 import ApiError from "../../../errors/ApiError"
 import httpStatus from "http-status"
 import { StudentEnrolledCourseMarkUtils } from "./studentEnrolledCousreMark.utils"
+import { IStudentEnrolledCourseMarkFilterRequest } from "./studentEnrolledCourseMark.interface"
+import { IPaginationOptions } from "../../../interfaces/pagination"
+import { IGenericResponse } from "../../../interfaces/common"
+import { paginationHelpers } from "../../../helpers/paginationHelper"
 
 const createStudentEnrolledCourseDefaultMark = async (
     prismaClient: Omit<PrismaClient<PrismaClientOptions, never, DefaultArgs>, "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends">,
@@ -127,7 +131,48 @@ const updateStudentMarks = async (payload: any) => {
 
     return updateStudentMarks;
 }
+// ***************************************************
+const getAllFromDB = async (
+    filters: IStudentEnrolledCourseMarkFilterRequest,
+    options: IPaginationOptions
+): Promise<IGenericResponse<StudentEnrolledCourseMark[]>> => {
+    const { limit, page } = paginationHelpers.calculatePagination(options);
 
+    const marks = await prisma.studentEnrolledCourseMark.findMany({
+        where: {
+            student: {
+                id: filters.studentId
+            },
+            academicSemester: {
+                id: filters.academicSemesterId
+            },
+            studentEnrolledCourse: {
+                course: {
+                    id: filters.courseId
+                }
+            }
+        },
+        include: {
+            studentEnrolledCourse: {
+                include: {
+                    course: true
+                }
+            },
+            student: true
+        }
+    });
+
+    return {
+        meta: {
+            total: marks.length,
+            page,
+            limit
+        },
+        data: marks
+    };
+};
+
+// *************************************************
 const updateFinalMarks = async (payload: any) => {
     const { studentId, academicSemesterId, courseId } = payload;
     const studentEnrolledCourse = await prisma.studentEnrolledCourse.findFirst({
@@ -247,9 +292,60 @@ const updateFinalMarks = async (payload: any) => {
 
     return grades;
 }
+// **************************************************************
+const getMyCourseMarks = async (
+    filters: IStudentEnrolledCourseMarkFilterRequest,
+    options: IPaginationOptions,
+    authUser: any
+): Promise<IGenericResponse<StudentEnrolledCourseMark[]>> => {
+    const { limit, page, } = paginationHelpers.calculatePagination(options);
 
+    const student = await prisma.student.findFirst({
+        where: {
+            studentId: authUser.id
+        }
+    });
+
+    if (!student) {
+        throw new ApiError(httpStatus.NOT_FOUND, 'Student not found');
+    }
+
+    const marks = await prisma.studentEnrolledCourseMark.findMany({
+        where: {
+            student: {
+                id: student.id
+            },
+            academicSemester: {
+                id: filters.academicSemesterId
+            },
+            studentEnrolledCourse: {
+                course: {
+                    id: filters.courseId
+                }
+            }
+        },
+        include: {
+            studentEnrolledCourse: {
+                include: {
+                    course: true
+                }
+            }
+        }
+    });
+
+    return {
+        meta: {
+            total: marks.length,
+            page,
+            limit
+        },
+        data: marks
+    };
+};
 export const StudentEnrolledCourseMarkService = {
     createStudentEnrolledCourseDefaultMark,
     updateStudentMarks,
-    updateFinalMarks
+    getAllFromDB ,
+    updateFinalMarks,
+    getMyCourseMarks
 }
